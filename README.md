@@ -1,7 +1,13 @@
 # Recursive Symlink Creator
 ---
 
-An utility for automatic creation recursive mirror symlinks from a source folder to a destination folder.
+Tired of manually managing symlinks for your media server? This handy utility automates the creation of recursive mirror symlinks, making it a breeze to keep your media organized and accessible.
+
+
+#### Why use this?:
+* Effortless Symlink Creation: Create a perfect mirror of your source folder's structure in the destination media server watchdog folder, all with a single click.
+* Media Server Optimization: Ideal for Jellyfin, Plex, or other media servers. Freely use tools like FileBot to rename "files" -> symlinks for easy identification without sacrificing torrent seeding capabilities.
+
 
 #### Features:
 > ✅ Folder Selection: Browse and select source and destination folders using intuitive file dialogs and demonstrating directories | files count.
@@ -17,14 +23,12 @@ An utility for automatic creation recursive mirror symlinks from a source folder
 > ✅ Window Management: Centers the GUI window and makes it topmost to enhance user experience.
 
 ---
----
 
 >GUI:
 <p align="center">
-<img src="https://telegra.ph/file/70ef7c313617d951a9a88.jpg">
+<img src="https://telegra.ph/file/fd2b28b309302480b591e.jpg">
 </p>
 
----
 ---
 
 #### Run/Build Instructions:
@@ -45,7 +49,7 @@ Or build the .exe file with the following command:
 ```
 The executable will be created in `dist` directory
 
-Or you can just download already built executable [here](https://github.com/smyhlin/TODO)
+Or you can just download already built executable [here](https://github.com/smyhlin/Recursive-Symlink-Creator/releases)
 
 #### Technologies Used:
 
