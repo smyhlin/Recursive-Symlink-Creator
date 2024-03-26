@@ -1,5 +1,6 @@
 import customtkinter as ctk
-from tkinter import filedialog, Label, Frame
+import customtkinter
+from tkinter import filedialog, Label
 from CTkMessagebox import CTkMessagebox
 import os
 import sys
@@ -7,49 +8,71 @@ import ctypes
 import shutil
 
 
-class RecursiveSymlinkGUI:
+class RecursiveSymlinkGUI(customtkinter.CTk):
     def __init__(self):
+        super().__init__()
         self.folder_count = 0
         self.file_count = 0
-        ctk.set_appearance_mode("dark")
-        ctk.set_default_color_theme("blue")
+        self.replace_existence_symlink_folders = False
 
-        self.root = ctk.CTk()
-        self.root.title("Recursive Symlink Creator")
-        self.root.geometry("720x255")
-        self.root.resizable(False, False)
+        self.title("Recursive Symlink Creator")
+        self.geometry("720x255")
+        self.resizable(False, False)
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)  # call .on_closing() when app gets closed
+
+        #! configure root grid layout (3x1)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(2, weight=1)
 
         # Source sub-box
-        source_frame = ctk.CTkFrame(self.root)
-        source_frame.pack(fill="x", pady=5, padx=5)
+        self.source_frame = ctk.CTkFrame(self)
+        self.source_frame.grid(row=0, column=0, pady=5, padx=5, sticky="nswe")
 
-        self.source_label = Label(source_frame, text="Source Folder:", bg='#2b2b2b', fg='#fff', font='Helvetica 12 bold')
-        self.source_label.pack(fill="x", padx=5)
+        self.source_label = Label(self.source_frame, text="Source Folder:", bg='#2b2b2b', fg='#fff', font='Helvetica 12 bold')
+        self.source_label.grid(padx=5,sticky="we")
 
-        self.source_entry = ctk.CTkEntry(source_frame)
-        self.source_entry.pack(fill="x", padx=5)
+        self.source_entry = ctk.CTkEntry(self.source_frame)
+        self.source_entry.grid(padx=5,sticky="we")
 
-        self.browse_source_button = ctk.CTkButton(source_frame, text="Browse", command=self.browse_source)
-        self.browse_source_button.pack(pady=5)
+        self.browse_source_button = ctk.CTkButton(self.source_frame, text="Browse", command=self.browse_source)
+        self.browse_source_button.grid(pady=5,sticky="n")
+        #! configure source_frame grid layout (2x1)
+        self.source_frame.grid_columnconfigure(0, weight=1)
+        self.source_frame.grid_rowconfigure(2, weight=1)
 
         # Destination sub-box
-        dest_frame = ctk.CTkFrame(self.root)
-        dest_frame.pack(fill="x", pady=5, padx=5)
+        self.dest_frame = ctk.CTkFrame(self)
+        self.dest_frame.grid(row=1, column=0, pady=5, padx=5, sticky="nswe")
 
-        self.dest_label = Label(dest_frame, text="Destination Folder:", bg='#2b2b2b', fg='#fff', font='Helvetica 12 bold')
-        self.dest_label.pack(fill="x", padx=5)
+        self.dest_label = Label(self.dest_frame, text="Destination Folder:", bg='#2b2b2b', fg='#fff', font='Helvetica 12 bold')
+        self.dest_label.grid(padx=5, sticky="we")
 
-        self.dest_entry = ctk.CTkEntry(dest_frame)
-        self.dest_entry.pack(fill="x", padx=5)
+        self.dest_entry = ctk.CTkEntry(self.dest_frame)
+        self.dest_entry.grid(padx=5, sticky="we")
 
-        self.browse_dest_button = ctk.CTkButton(dest_frame, text="Browse", command=self.browse_dest)
-        self.browse_dest_button.pack(pady=5)
+        self.browse_dest_button = ctk.CTkButton(self.dest_frame, text="Browse", command=self.browse_dest)
+        self.browse_dest_button.grid(pady=5, sticky="n")
+        #! configure dest_frame grid layout (2x1)
+        self.dest_frame.grid_columnconfigure(0, weight=1)
+        self.dest_frame.grid_rowconfigure(2, weight=1)
+        
+        # Root sub-box
+        self.root_frame = ctk.CTkFrame(self)
+        self.root_frame.grid(row=2, column=0, pady=5, padx=5, sticky="nswe")
 
         # Create Symlinks button
-        self.create_button = ctk.CTkButton(self.root, text="Create Symlinks", command=self.create_symlinks)
-        self.create_button.pack(fill="x", pady=10, padx=5)
+        self.create_button = ctk.CTkButton(self.root_frame, text="Create Symlinks", width=200, command=self.create_symlinks)
+        self.create_button.grid(row=1, column=0, pady=5, padx=5)
 
-        self.center_window(self.root)
+        # Disable(default) \ Enable delete of allready existed folders radio button
+        self.create_button = ctk.CTkRadioButton(self.root_frame, text="Create Symlinks", command=self.operate_existence_folders)
+        self.create_button.grid(row=1, column=0, pady=5, padx=5, sticky="w")
+
+        #! configure dest_frame grid layout (2x1)
+        self.root_frame.grid_columnconfigure(0, weight=1)
+        self.root_frame.grid_rowconfigure(2, weight=1)
+
+        self.center_window(self)
 
     def center_window(self, window):
         window.update_idletasks()
@@ -97,6 +120,9 @@ class RecursiveSymlinkGUI:
         entry.delete(0, ctk.END)
         entry.insert(0, folder_path)
 
+    def operate_existence_folders(self):
+        pass
+
     def create_symlinks(self):
         source_path = self.source_entry.get()
         dest_path = self.dest_entry.get()
@@ -128,9 +154,9 @@ class RecursiveSymlinkGUI:
             else:
                 os.symlink(source_path, dest_path)
 
+    def on_closing(self, event=0):
+        self.destroy()
 
-    def run(self):
-        self.root.mainloop()
 
 def run_as_admin():
     try:
@@ -150,5 +176,5 @@ if __name__ == "__main__":
         if not isUserAdmin():
             run_as_admin()
             sys.exit()
-        gui = RecursiveSymlinkGUI()
-        gui.run()
+        app = RecursiveSymlinkGUI()
+        app.mainloop()
