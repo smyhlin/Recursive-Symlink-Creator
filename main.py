@@ -13,8 +13,7 @@ class RecursiveSymlinkGUI(customtkinter.CTk):
         super().__init__()
         self.folder_count = 0
         self.file_count = 0
-        self.replace_existence_symlink_folders = False
-
+        self.operate_folder_var = customtkinter.BooleanVar()
         self.title("Recursive Symlink Creator")
         self.geometry("720x255")
         self.resizable(False, False)
@@ -28,7 +27,7 @@ class RecursiveSymlinkGUI(customtkinter.CTk):
         self.source_frame = ctk.CTkFrame(self)
         self.source_frame.grid(row=0, column=0, pady=5, padx=5, sticky="nswe")
 
-        self.source_label = Label(self.source_frame, text="Source Folder:", bg='#2b2b2b', fg='#fff', font='Helvetica 12 bold')
+        self.source_label = Label(self.source_frame, text="Source Folder:", bg='#2b2b2b', fg='#fff', font='Helvetica 11 bold')
         self.source_label.grid(padx=5,sticky="we")
 
         self.source_entry = ctk.CTkEntry(self.source_frame)
@@ -44,7 +43,7 @@ class RecursiveSymlinkGUI(customtkinter.CTk):
         self.dest_frame = ctk.CTkFrame(self)
         self.dest_frame.grid(row=1, column=0, pady=5, padx=5, sticky="nswe")
 
-        self.dest_label = Label(self.dest_frame, text="Destination Folder:", bg='#2b2b2b', fg='#fff', font='Helvetica 12 bold')
+        self.dest_label = Label(self.dest_frame, text="Destination Folder:", bg='#2b2b2b', fg='#fff', font='Helvetica 11 bold')
         self.dest_label.grid(padx=5, sticky="we")
 
         self.dest_entry = ctk.CTkEntry(self.dest_frame)
@@ -64,13 +63,15 @@ class RecursiveSymlinkGUI(customtkinter.CTk):
         self.create_button = ctk.CTkButton(self.root_frame, text="Create Symlinks", width=200, command=self.create_symlinks)
         self.create_button.grid(row=1, column=0, pady=5, padx=5)
 
-        # Disable(default) \ Enable delete of allready existed folders radio button
-        self.create_button = ctk.CTkRadioButton(self.root_frame, text="Create Symlinks", command=self.operate_existence_folders)
-        self.create_button.grid(row=1, column=0, pady=5, padx=5, sticky="w")
+        # Disable(default) \ Enable delete of allready existed folders checkbox
+        self.delete_checkbox = ctk.CTkCheckBox(self.root_frame, 
+                                               text="Delete prev created symlinks", 
+                                                variable=self.operate_folder_var, onvalue=True, offvalue=False)
+        self.delete_checkbox.grid(row=1, column=0, pady=5, padx=5, sticky="w")
 
-        #! configure dest_frame grid layout (2x1)
+        #! configure root_frame grid layout (2x1)
         self.root_frame.grid_columnconfigure(0, weight=1)
-        self.root_frame.grid_rowconfigure(2, weight=1)
+        self.root_frame.grid_rowconfigure(1, weight=1)
 
         self.center_window(self)
 
@@ -120,9 +121,6 @@ class RecursiveSymlinkGUI(customtkinter.CTk):
         entry.delete(0, ctk.END)
         entry.insert(0, folder_path)
 
-    def operate_existence_folders(self):
-        pass
-
     def create_symlinks(self):
         source_path = self.source_entry.get()
         dest_path = self.dest_entry.get()
@@ -140,19 +138,29 @@ class RecursiveSymlinkGUI(customtkinter.CTk):
             if os.path.islink(source_path):
                 continue  # Skip existing symlinks in the source
 
+            # If Delete_Checkbox selected, "operate_folder_var" = True
             if os.path.exists(dest_path):
                 if os.path.islink(dest_path):
-                    os.remove(dest_path)  # Remove existing symlink
+                    if self.operate_folder_var.get():
+                        os.remove(dest_path)  # Remove existing symlink
+                    else:
+                        continue
                 elif os.path.isdir(dest_path):
-                    shutil.rmtree(dest_path)  # Remove existing folder
+                    if self.operate_folder_var.get():
+                        shutil.rmtree(dest_path)  # Remove existing folder
+                    else:
+                        continue
                 else:
-                    os.remove(dest_path)  # Remove existing file
-
+                    if self.operate_folder_var.get():
+                        os.remove(dest_path)  # Remove existing file
+                    else:
+                        continue
             if os.path.isdir(source_path):
                 os.makedirs(dest_path)
                 self.recursive_symlink(source_path, dest_path)
             else:
                 os.symlink(source_path, dest_path)
+
 
     def on_closing(self, event=0):
         self.destroy()
