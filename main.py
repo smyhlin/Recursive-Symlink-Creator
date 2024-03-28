@@ -1,5 +1,4 @@
 import customtkinter as ctk
-import customtkinter
 from tkinter import filedialog, Label
 from CTkMessagebox import CTkMessagebox
 import os
@@ -8,12 +7,12 @@ import ctypes
 import shutil
 
 
-class RecursiveSymlinkGUI(customtkinter.CTk):
+class RecursiveSymlinkGUI(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.folder_count = 0
         self.file_count = 0
-        self.operate_folder_var = customtkinter.BooleanVar()
+        self.operate_folder_var = ctk.BooleanVar()
         self.title("Recursive Symlink Creator")
         self.geometry("720x255")
         self.resizable(False, False)
@@ -76,6 +75,7 @@ class RecursiveSymlinkGUI(customtkinter.CTk):
         self.center_window(self)
 
     def center_window(self, window):
+        """Centers the window on the screen."""
         window.update_idletasks()
         width = window.winfo_width()
         height = window.winfo_height()
@@ -83,7 +83,7 @@ class RecursiveSymlinkGUI(customtkinter.CTk):
         screen_height = window.winfo_screenheight()
         x = (screen_width - width) // 2
         y = (screen_height - height) // 2
-        window.geometry('+{}+{}'.format(x, y))
+        window.geometry(f"+{x}+{y}")
         window.focus_force()
         window.wm_attributes("-topmost", True)
 
@@ -110,18 +110,22 @@ class RecursiveSymlinkGUI(customtkinter.CTk):
                 self.file_count += 1
 
     def browse_source(self):
+        """Opens a file dialog to select the source folder."""
         self.browse_folder(self.source_entry)
         self.update_label_info(self.source_entry, self.source_label)
 
     def browse_dest(self):
+        """Opens a file dialog to select the destination folder."""
         self.browse_folder(self.dest_entry)
 
     def browse_folder(self, entry):
+        """Opens a file dialog to select a folder and updates the given entry."""
         folder_path = filedialog.askdirectory()
         entry.delete(0, ctk.END)
         entry.insert(0, folder_path)
 
     def create_symlinks(self):
+        """main init function that run all processes."""
         source_path = self.source_entry.get()
         dest_path = self.dest_entry.get()
         try:
@@ -131,6 +135,7 @@ class RecursiveSymlinkGUI(customtkinter.CTk):
             CTkMessagebox(title="Error", message=str(e), icon="cancel")
 
     def recursive_symlink(self, source, destination):
+        """Recursively creates symlinks from the source to the destination folder logick."""
         for entry in os.listdir(source):
             source_path = os.path.join(source, entry)
             dest_path = os.path.join(destination, entry)
@@ -140,21 +145,16 @@ class RecursiveSymlinkGUI(customtkinter.CTk):
 
             # If Delete_Checkbox selected, "operate_folder_var" = True
             if os.path.exists(dest_path):
-                if os.path.islink(dest_path):
-                    if self.operate_folder_var.get():
-                        os.remove(dest_path)  # Remove existing symlink
+                if self.operate_folder_var.get():
+                    if os.path.islink(dest_path):
+                        os.remove(dest_path)
+                    elif os.path.isdir(dest_path):
+                        shutil.rmtree(dest_path)
                     else:
-                        continue
-                elif os.path.isdir(dest_path):
-                    if self.operate_folder_var.get():
-                        shutil.rmtree(dest_path)  # Remove existing folder
-                    else:
-                        continue
+                        os.remove(dest_path)
                 else:
-                    if self.operate_folder_var.get():
-                        os.remove(dest_path)  # Remove existing file
-                    else:
-                        continue
+                    continue
+
             if os.path.isdir(source_path):
                 os.makedirs(dest_path)
                 self.recursive_symlink(source_path, dest_path)
@@ -163,10 +163,12 @@ class RecursiveSymlinkGUI(customtkinter.CTk):
 
 
     def on_closing(self, event=0):
+        """Closes the application."""
         self.destroy()
 
 
 def run_as_admin():
+    """Attempts to run the script as administrator."""
     try:
         ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv[1:]), None, 1)
         return True
@@ -174,15 +176,17 @@ def run_as_admin():
         print("Error:", e)
         return False
     
-def isUserAdmin():
+def is_user_admin():
+    """Checks if the user is an administrator."""
     if ctypes.windll.shell32.IsUserAnAdmin():
         return True
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        if not isUserAdmin():
+        if not is_user_admin():
             run_as_admin()
             sys.exit()
+        #run only when compiled (windwos specific run as admin behavior mechanism)
         app = RecursiveSymlinkGUI()
         app.mainloop()
