@@ -22,11 +22,13 @@ Tired of manually managing symlinks for your media server? This handy utility au
 
 > ✅ Window Management: Centers the GUI window and makes it topmost to enhance user experience.
 
+> ✅ Logging: Selfloging most importan program node.
+
 ---
 
 >GUI:
 <p align="center">
-<img src="https://telegra.ph/file/fd2b28b309302480b591e.jpg">
+<img src="https://telegra.ph/file/24d1db5bdb7e863362ac3.png">
 </p>
 
 ---
