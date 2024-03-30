@@ -157,9 +157,14 @@ class RecursiveSymlinkGUI(ctk.CTk):
         entry.insert(0, folder_path)
         self.log_operation(f'►►► Folder {folder_path} was selected')
 
-    def log_operation(self, message):
+    def log_operation(self, message, foreground="white"):
         """Logs an operation message to the log area."""
-        self.log_text.insert(END, message + "\n")
+        if foreground != 'white':
+            self.log_text.tag_config("folder", foreground=foreground)
+            self.log_text.insert(END, message + "\n", "folder") # add folder tag to line which make it as described in config
+        else:
+            self.log_text.insert(END, message + "\n")
+
         self.log_text.see(END)  # Scroll to the end
 
     def create_symlinks(self):
@@ -206,7 +211,7 @@ class RecursiveSymlinkGUI(ctk.CTk):
 
             if os.path.isdir(source_path):
                 os.makedirs(dest_path)
-                self.log_operation(f"►►► Created directory: {dest_path}")
+                self.log_operation(f"►►► Created directory: {dest_path}", foreground='steel blue')
                 self.recursive_symlink(source_path, dest_path)
             else:
                 os.symlink(source_path, dest_path)
