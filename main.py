@@ -65,7 +65,7 @@ class RecursiveSymlinkGUI(ctk.CTk):
 
         # Disable(default) \ Enable delete of allready existed folders checkbox
         self.delete_checkbox = ctk.CTkCheckBox(self.root_frame, 
-                                            text="Delete prev created symlinks", 
+                                            text="Delete prev. created symlinks", 
                                             variable=self.operate_folder_var,
                                             command=self.push_checkbox,
                                             onvalue=True, 
@@ -96,7 +96,7 @@ class RecursiveSymlinkGUI(ctk.CTk):
         self.log_frame.grid_columnconfigure(0, weight=1)
         self.log_frame.grid_rowconfigure(1, weight=1)
 
-        self.log_operation("►►► Launch completed successfully ◄◄◄")
+        self.log_operation("►►► Launch completed successfully ◄◄◄", foreground='SteelBlue4')
         self.center_window(self)
 
     def center_window(self, window):
@@ -114,9 +114,9 @@ class RecursiveSymlinkGUI(ctk.CTk):
 
     def push_checkbox(self):
         if self.operate_folder_var.get():
-            self.log_operation('►►► Program will delete allready existed folders checkbox')
+            self.log_operation('►►► Program will delete allready existed folders checkbox', foreground='SteelBlue1')
         else:
-            self.log_operation('►►► Program will skip allready existed folders checkbox')
+            self.log_operation('►►► Program will skip allready existed folders checkbox', foreground='SteelBlue1')
 
     def update_label_info(self, entry, label):
         """Updates the label with folder and file counts."""
@@ -124,12 +124,12 @@ class RecursiveSymlinkGUI(ctk.CTk):
         if os.path.exists(path):
             self.count_folders_and_files(path)
             label.config(text=f"{label.cget('text').split(':')[0]}: ({self.folder_count} folders, {self.file_count} files)")
-            self.log_operation(f"►►► {label.cget('text').split(':')[0]}: ({self.folder_count} folders, {self.file_count} files)")
+            self.log_operation(f"►►► {label.cget('text').split(':')[0]}: ({self.folder_count} folders, {self.file_count} files)", foreground='SteelBlue1')
             self.folder_count = 0
             self.file_count = 0
         else:
             label.config(text=f"{label.cget('text').split(':')[0]}: 0")
-            self.log_operation(f"►►► {label.cget('text').split(':')[0]}: 0")
+            self.log_operation(f"►►► {label.cget('text').split(':')[0]}: 0", foreground='SteelBlue1')
 
     def count_folders_and_files(self, path):
         """Counts folders and files within the given path."""
@@ -155,11 +155,11 @@ class RecursiveSymlinkGUI(ctk.CTk):
         folder_path = filedialog.askdirectory()
         entry.delete(0, ctk.END)
         entry.insert(0, folder_path)
-        self.log_operation(f'►►► Folder {folder_path} was selected')
+        self.log_operation(f'►►► Folder {folder_path} was selected', foreground='SteelBlue1')
 
-    def log_operation(self, message, foreground="white"):
+    def log_operation(self, message, foreground="standart"):
         """Logs an operation message to the log area."""
-        if foreground != 'white':
+        if foreground != 'standart':
             self.log_text.tag_config("folder", foreground=foreground)
             self.log_text.insert(END, message + "\n", "folder") # add folder tag to line which make it as described in config
         else:
@@ -175,11 +175,11 @@ class RecursiveSymlinkGUI(ctk.CTk):
         try:
             self.log_operation("►►► Creating symlinks...")
             self.recursive_symlink(source_path, dest_path)
-            self.log_operation("►►► Symlinks created successfully!")
+            self.log_operation("►►► Symlinks created successfully! ◄◄◄", foreground='SteelBlue4')
             CTkMessagebox(title="Info", message="Symlink created successfully!")
 
         except Exception as e:
-            self.log_operation(f"►►► Error: {str(e)}")
+            self.log_operation(f"►►► Error: {str(e)}", foreground='SteelBlue1')
             CTkMessagebox(title="Error", message=str(e), icon="cancel")
 
 
@@ -190,7 +190,7 @@ class RecursiveSymlinkGUI(ctk.CTk):
             dest_path = os.path.join(destination, entry)
 
             if os.path.islink(source_path):
-                self.log_operation(f"Skipping existing symlink: {source_path}")
+                self.log_operation(f"Skipping existing symlink: {source_path}", foreground='SteelBlue1')
                 continue
 
             if os.path.exists(dest_path):
@@ -198,15 +198,15 @@ class RecursiveSymlinkGUI(ctk.CTk):
                 if self.operate_folder_var.get():
                     if os.path.islink(dest_path):
                         os.remove(dest_path)
-                        self.log_operation(f"Removed existing symlink: {dest_path}")
+                        self.log_operation(f"Removed existing symlink: {dest_path}", foreground='SteelBlue1')
                     elif os.path.isdir(dest_path):
                         shutil.rmtree(dest_path)
-                        self.log_operation(f"Removed existing directory: {dest_path}")
+                        self.log_operation(f"Removed existing directory: {dest_path}", foreground='SteelBlue1')
                     else:
                         os.remove(dest_path)
-                        self.log_operation(f"Removed existing file: {dest_path}")
+                        self.log_operation(f"Removed existing file: {dest_path}", foreground='SteelBlue1')
                 else:
-                    self.log_operation(f"Skipping existing file/folder: {dest_path}")
+                    self.log_operation(f"Skipping existing file/folder: {dest_path}", foreground='SteelBlue1')
                     continue
 
             if os.path.isdir(source_path):
