@@ -22,13 +22,13 @@ Tired of manually managing symlinks for your media server? This handy utility au
 
 > ✅ Window Management: Centers the GUI window and makes it topmost to enhance user experience.
 
-> ✅ Logging: Selfloging most importan program node.
+> ✅ Logging: Selfloging tree view of most importan program nodes.
 
 ---
 
 >GUI:
 <p align="center">
-<img src="https://telegra.ph/file/fcc6662f1bbd38e68a0b5.png">
+<img src="https://telegra.ph/file/94dc4ff910c97512c052c.jpg">
 </p>
 
 ---
@@ -62,7 +62,7 @@ Or you can just download already built executable [here](https://github.com/smyh
 * shutil (for folder removal)
 
 ## TODO:
-* Tree view of folder structure
+* Complex minu Tree view on the end of program execution 
 
 ## Telegram Support:
 
