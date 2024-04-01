@@ -1,3 +1,5 @@
+from cgitb import text
+from re import DEBUG
 import tkinter
 import customtkinter as ctk
 from tkinter import filedialog, Label, Text, END, NONE
@@ -9,10 +11,13 @@ import shutil
 
 
 class RecursiveSymlinkGUI(ctk.CTk):
+    DEBUG_ME=False
     def __init__(self):
         super().__init__()
         self.folder_count = 0
         self.file_count = 0
+        self.recursive_count = 1
+        self.recursive_root_path = ''
         self.operate_folder_var = ctk.BooleanVar()
         self.title("Recursive Symlink Creator")
         self.geometry("960x590")  # Increased height for log area
@@ -30,9 +35,11 @@ class RecursiveSymlinkGUI(ctk.CTk):
         self.source_label = Label(self.source_frame, text="Source Folder:", bg='#2b2b2b', fg='#fff', font='Helvetica 11 bold')
         self.source_label.grid(padx=5,sticky="we")
 
-        self.source_entry = ctk.CTkEntry(self.source_frame)
+        self.source_entry = ctk.CTkEntry(self.source_frame, )
         self.source_entry.grid(padx=5,sticky="we")
-
+        if self.DEBUG_ME:
+            self.source_entry.delete(0, ctk.END)
+            self.source_entry.insert(0, r'F:\Media\Serials')
         self.browse_source_button = ctk.CTkButton(self.source_frame, text="Browse", command=self.browse_source)
         self.browse_source_button.grid(pady=5,sticky="n")
         #! configure source_frame grid layout (2x1)
@@ -48,6 +55,9 @@ class RecursiveSymlinkGUI(ctk.CTk):
 
         self.dest_entry = ctk.CTkEntry(self.dest_frame)
         self.dest_entry.grid(padx=5, sticky="we")
+        if self.DEBUG_ME:
+            self.dest_entry.delete(0, ctk.END)
+            self.dest_entry.insert(0, r'F:\smsm')
 
         self.browse_dest_button = ctk.CTkButton(self.dest_frame, text="Browse", command=self.browse_dest)
         self.browse_dest_button.grid(pady=5, sticky="n")
@@ -176,6 +186,7 @@ class RecursiveSymlinkGUI(ctk.CTk):
             self.log_operation("►►► Creating symlinks...")
             self.recursive_symlink(source_path, dest_path)
             self.log_operation("►►► Symlinks created successfully! ◄◄◄", foreground='SteelBlue4')
+            self.recursive_count=0
             CTkMessagebox(title="Info", message="Symlink created successfully!")
 
         except Exception as e:
@@ -211,11 +222,13 @@ class RecursiveSymlinkGUI(ctk.CTk):
 
             if os.path.isdir(source_path):
                 os.makedirs(dest_path)
-                self.log_operation(f"►►► Created directory: {dest_path}", foreground='steel blue')
+                self.log_operation(' '*(self.recursive_count*3 if self.recursive_count>1 else 0) + ('--- ' if self.recursive_count>1 else '')+ f"Created directory: {dest_path}", foreground='steel blue')
+                self.recursive_count+=1
                 self.recursive_symlink(source_path, dest_path)
+                self.recursive_count-=1
             else:
                 os.symlink(source_path, dest_path)
-                self.log_operation(f"Created symlink: {dest_path} -> {source_path}")
+                self.log_operation(' '*(self.recursive_count*3 if self.recursive_count>1 else 0) + ('|--- ' if self.recursive_count>1 else '') + f"Created symlink': {dest_path} -> {source_path}")
 
 
     def on_closing(self, event=0):
