@@ -62,7 +62,7 @@ Or you can just download already built executable [here](https://github.com/smyh
 * shutil (for folder removal)
 
 ## TODO:
-* Complex minu Tree view on the end of program execution 
+* Add button to get mini\full path tree view 
 
 ## Telegram Support:
 
