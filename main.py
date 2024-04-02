@@ -1,6 +1,3 @@
-from cgitb import text
-from re import DEBUG
-import tkinter
 import customtkinter as ctk
 from tkinter import filedialog, Label, Text, END, NONE
 from CTkMessagebox import CTkMessagebox
@@ -17,7 +14,7 @@ class RecursiveSymlinkGUI(ctk.CTk):
         self.folder_count = 0
         self.file_count = 0
         self.recursive_count = 1
-        self.recursive_root_path = ''
+        self.mini_tree = ''''''
         self.operate_folder_var = ctk.BooleanVar()
         self.title("Recursive Symlink Creator")
         self.geometry("960x590")  # Increased height for log area
@@ -186,6 +183,10 @@ class RecursiveSymlinkGUI(ctk.CTk):
             self.log_operation("►►► Creating symlinks...")
             self.recursive_symlink(source_path, dest_path)
             self.log_operation("►►► Symlinks created successfully! ◄◄◄", foreground='SteelBlue4')
+
+            minitree = os.popen(f"tree {self.dest_entry.get()}").read()
+            self.log_operation('\n\n'+minitree, foreground='SteelBlue4')
+
             self.recursive_count=0
             CTkMessagebox(title="Info", message="Symlink created successfully!")
 
@@ -222,14 +223,15 @@ class RecursiveSymlinkGUI(ctk.CTk):
 
             if os.path.isdir(source_path):
                 os.makedirs(dest_path)
-                self.log_operation(' '*(self.recursive_count*3 if self.recursive_count>1 else 0) + ('--- ' if self.recursive_count>1 else '')+ f"Created directory: {dest_path}", foreground='steel blue')
+                folder_log = (' '*(self.recursive_count*3 if self.recursive_count>1 else 0) + ('--- ' if self.recursive_count>1 else '')+ f"Created directory: {dest_path}")
+                self.log_operation(folder_log)
+                
                 self.recursive_count+=1
                 self.recursive_symlink(source_path, dest_path)
                 self.recursive_count-=1
             else:
                 os.symlink(source_path, dest_path)
                 self.log_operation(' '*(self.recursive_count*3 if self.recursive_count>1 else 0) + ('|--- ' if self.recursive_count>1 else '') + f"Created symlink': {dest_path} -> {source_path}")
-
 
     def on_closing(self, event=0):
         """Closes the application."""
