@@ -67,8 +67,12 @@ class RecursiveSymlinkGUI(ctk.CTk):
         self.root_frame.grid(row=2, column=1, pady=5, padx=5, sticky="nswe")
 
         # Create Symlinks button
-        self.create_button = ctk.CTkButton(self.root_frame, text="Create Symlinks", width=200, command=self.create_symlinks)
-        self.create_button.grid(row=0, column=1, pady=5, padx=5, sticky="ne")
+        self.create_symlinks_button = ctk.CTkButton(self.root_frame, text="Create Symlinks", width=200, command=self.create_symlinks)
+        self.create_symlinks_button.grid(row=0, column=1, pady=5, padx=5, sticky="ne")
+
+        # Create Mini tree button
+        self.create_tree_button = ctk.CTkButton(self.root_frame, text="Generate Folder Minitree", width=200, command=self.create_minitree)
+        self.create_tree_button.grid(row=1, column=1, pady=5, padx=5, sticky="ne")
 
         # Disable(default) \ Enable delete of allready existed folders checkbox
         self.delete_checkbox = ctk.CTkCheckBox(self.root_frame, 
@@ -77,7 +81,7 @@ class RecursiveSymlinkGUI(ctk.CTk):
                                             command=self.push_checkbox,
                                             onvalue=True, 
                                             offvalue=False)
-        self.delete_checkbox.grid(row=1, column=1, pady=5, padx=5, sticky="ne")
+        self.delete_checkbox.grid(row=2, column=1, pady=5, padx=5, sticky="ne")
 
         # Log area
         self.log_frame = ctk.CTkFrame(self)
@@ -174,6 +178,8 @@ class RecursiveSymlinkGUI(ctk.CTk):
 
         self.log_text.see(END)  # Scroll to the end
 
+    def create_minitree(self):
+        pass
     def create_symlinks(self):
         """main init function that run all processes."""
         source_path = self.source_entry.get()
