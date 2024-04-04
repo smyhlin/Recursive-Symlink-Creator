@@ -62,7 +62,9 @@ Or you can just download already built executable [here](https://github.com/smyh
 * shutil (for folder removal)
 
 ## TODO:
-* Add button to get mini\full path tree view 
+* Add full tree with files checkbox and function
+* Add clear log windows function
+* Get media single file info button
 
 ## Telegram Support:
 
