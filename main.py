@@ -179,7 +179,10 @@ class RecursiveSymlinkGUI(ctk.CTk):
         self.log_text.see(END)  # Scroll to the end
 
     def create_minitree(self):
-        pass
+        folder_path = filedialog.askdirectory()
+        minitree = os.popen(f"tree {folder_path}").read()
+        self.log_operation('\n\n'+minitree, foreground='SteelBlue4')
+
     def create_symlinks(self):
         """main init function that run all processes."""
         source_path = self.source_entry.get()
