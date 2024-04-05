@@ -67,13 +67,9 @@ class RecursiveSymlinkGUI(ctk.CTk):
         self.root_frame.grid(row=2, column=1, pady=5, padx=5, sticky="nswe")
 
         # Create Symlinks button
-        self.create_symlinks_button = ctk.CTkButton(self.root_frame, text="Create Symlinks", width=200, command=self.create_symlinks)
-        self.create_symlinks_button.grid(row=0, column=1, pady=5, padx=5, sticky="ne")
-
-        # Create Mini tree button
-        self.create_tree_button = ctk.CTkButton(self.root_frame, text="Generate Folder Minitree", width=200, command=self.create_minitree)
-        self.create_tree_button.grid(row=1, column=1, pady=5, padx=5, sticky="ne")
-
+        self.create_symlinks_button = ctk.CTkButton(self.root_frame, text="Create Symlinks", width=180, command=self.create_symlinks)
+        self.create_symlinks_button.grid(row=0, column=1, pady=5, padx=5, sticky="we")
+        
         # Disable(default) \ Enable delete of allready existed folders checkbox
         self.delete_checkbox = ctk.CTkCheckBox(self.root_frame, 
                                             text="Delete prev. created symlinks", 
@@ -81,7 +77,22 @@ class RecursiveSymlinkGUI(ctk.CTk):
                                             command=self.push_checkbox,
                                             onvalue=True, 
                                             offvalue=False)
-        self.delete_checkbox.grid(row=2, column=1, pady=5, padx=5, sticky="ne")
+        self.delete_checkbox.grid(row=2, column=1, pady=5, padx=5, sticky="nwe")
+
+        # Tree-box
+        self.tree_frame = ctk.CTkFrame(self.root_frame)
+        self.tree_frame.grid(row=1, column=1, pady=5, padx=5, sticky="nwe")
+
+        self.source_label = ctk.CTkLabel(self.tree_frame, text="Generate Folder tree view:")
+        self.source_label.grid(row=1, column=0, columnspan=2, padx=5,sticky="we")
+
+        # Create Mini tree button
+        self.create_mini_tree_button = ctk.CTkButton(self.tree_frame, text="Mini", width=90, command=self.create_minitree)
+        self.create_mini_tree_button.grid(row=2, column=0, pady=5, padx=5, sticky="nwse")
+
+        # Create Full tree button
+        self.create_full_tree_button = ctk.CTkButton(self.tree_frame, text="Full", width=90, command=self.create_tree)
+        self.create_full_tree_button.grid(row=2, column=1, pady=5, padx=5, sticky="nwse")
 
         # Log area
         self.log_frame = ctk.CTkFrame(self)
@@ -181,6 +192,11 @@ class RecursiveSymlinkGUI(ctk.CTk):
     def create_minitree(self):
         folder_path = filedialog.askdirectory()
         minitree = os.popen(f"tree {folder_path}").read()
+        self.log_operation('\n\n'+minitree, foreground='SteelBlue4')
+
+    def create_tree(self):
+        folder_path = filedialog.askdirectory()
+        minitree = os.popen(f"tree /f {folder_path}").read()
         self.log_operation('\n\n'+minitree, foreground='SteelBlue4')
 
     def create_symlinks(self):
