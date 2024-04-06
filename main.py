@@ -6,19 +6,22 @@ import sys
 import ctypes
 import shutil
 
+ctk.set_appearance_mode("System")
 
-class RecursiveSymlinkGUI(ctk.CTk):
+
+class App(ctk.CTk):
+    WIDTH = 960
+    HEIGHT = 590
     DEBUG_ME=False
     def __init__(self):
         super().__init__()
         self.folder_count = 0
         self.file_count = 0
         self.recursive_count = 1
-        self.mini_tree = ''''''
+        self.app_path = getattr(sys, "_MEIPASS", os.getcwd())
         self.operate_folder_var = ctk.BooleanVar()
         self.title("Recursive Symlink Creator")
-        self.geometry("960x590")  # Increased height for log area
-        self.resizable(False, False)
+        self.geometry(f"{App.WIDTH}x{App.HEIGHT}")  # Increased height for log area
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         # Configure root grid layout (3x1)
@@ -98,17 +101,9 @@ class RecursiveSymlinkGUI(ctk.CTk):
         self.log_frame = ctk.CTkFrame(self)
         self.log_frame.grid(row=2, column=0, pady=5, padx=5,sticky="nswe")
 
-        self.log_text = Text(self.log_frame, state="normal", undo=True, wrap=NONE, font=("Helvetica", 9), bg='#2b2b2b', fg='#fff')
-        self.log_text.grid(row=0, column=0, sticky="nswe")
-
-        self.log_scrollbar_y = ctk.CTkScrollbar(self.log_frame, 
-                                            command=self.log_text.yview, orientation="vertical")
-        self.log_scrollbar_y.grid(row=0, column=1, sticky="sn")
-
-        self.log_scrollbar_x = ctk.CTkScrollbar(self.log_frame, 
-                                            command=self.log_text.xview, orientation="horizontal")
-        self.log_scrollbar_x.grid(row=1, column=0, sticky="we")
-        self.log_text.config(yscrollcommand=self.log_scrollbar_y.set, xscrollcommand=self.log_scrollbar_x.set)
+        self.log_box = ctk.CTkTextbox(self.log_frame, font=("Helvetica", 12), wrap="none")
+        self.log_box.grid(row=0, column=0, rowspan=2, sticky="nswe")
+        # self.log_box.configure(state="disabled")
 
         # Configure root_frame grid layout (2x2)
         self.root_frame.grid_columnconfigure(2, weight=1)
@@ -123,14 +118,12 @@ class RecursiveSymlinkGUI(ctk.CTk):
 
     def center_window(self, window):
         """Centers the window on the screen."""
-        window.update_idletasks()
-        width = window.winfo_width()
-        height = window.winfo_height()
-        screen_width = window.winfo_screenwidth()
-        screen_height = window.winfo_screenheight()
-        x = (screen_width - width) // 2
-        y = (screen_height - height) // 2
-        window.geometry(f"+{x}+{y}")
+        sw = self.winfo_screenwidth()
+        sh = self.winfo_screenheight()
+
+        x = (sw - App.WIDTH) / 2
+        y = (sh - App.HEIGHT) / 2
+        self.geometry("%dx%d+%d+%d" % (App.WIDTH, App.HEIGHT, x, y))
         window.focus_force()
         window.wm_attributes("-topmost", True)
 
@@ -182,12 +175,12 @@ class RecursiveSymlinkGUI(ctk.CTk):
     def log_operation(self, message, foreground="standart"):
         """Logs an operation message to the log area."""
         if foreground != 'standart':
-            self.log_text.tag_config("folder", foreground=foreground)
-            self.log_text.insert(END, message + "\n", "folder") # add folder tag to line which make it as described in config
+            self.log_box.tag_config("folder", foreground=foreground)
+            self.log_box.insert(END, message + "\n", "folder") # add folder tag to line which make it as described in config
         else:
-            self.log_text.insert(END, message + "\n")
+            self.log_box.insert(END, message + "\n")
 
-        self.log_text.see(END)  # Scroll to the end
+        self.log_box.see(END)  # Scroll to the end
 
     def create_minitree(self):
         folder_path = filedialog.askdirectory()
@@ -284,5 +277,5 @@ if __name__ == "__main__":
             run_as_admin()
             sys.exit()
         #run only when compiled (windwos specific run as admin behavior mechanism)
-        app = RecursiveSymlinkGUI()
+        app = App()
         app.mainloop()
