@@ -28,7 +28,7 @@ Tired of manually managing symlinks for your media server? This handy utility au
 
 >GUI:
 <p align="center">
-<img src="https://telegra.ph/file/94dc4ff910c97512c052c.jpg">
+<img src="https://telegra.ph/file/954dbde7051f3ae86672e.png">
 </p>
 
 ---
@@ -62,7 +62,6 @@ Or you can just download already built executable [here](https://github.com/smyh
 * shutil (for folder removal)
 
 ## TODO:
-* Add full tree with files checkbox and function
 * Add clear log windows function
 * Get media single file info button
 
