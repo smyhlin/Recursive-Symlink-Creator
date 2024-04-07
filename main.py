@@ -69,12 +69,15 @@ class App(ctk.CTk):
         self.root_frame = ctk.CTkFrame(self)
         self.root_frame.grid(row=2, column=1, pady=5, padx=5, sticky="nswe")
 
+        # Symlink-box
+        self.symlink_frame = ctk.CTkFrame(self.root_frame)
+        self.symlink_frame.grid(row=0, column=1, pady=5, padx=5, sticky="nwe")
         # Create Symlinks button
-        self.create_symlinks_button = ctk.CTkButton(self.root_frame, text="Create Symlinks", width=180, command=self.create_symlinks)
+        self.create_symlinks_button = ctk.CTkButton(self.symlink_frame, text="Create Symlinks", width=180, command=self.create_symlinks)
         self.create_symlinks_button.grid(row=0, column=1, pady=5, padx=5, sticky="we")
         
         # Disable(default) \ Enable delete of allready existed folders checkbox
-        self.delete_checkbox = ctk.CTkCheckBox(self.root_frame, 
+        self.delete_checkbox = ctk.CTkCheckBox(self.symlink_frame, 
                                             text="Delete prev. created symlinks", 
                                             variable=self.operate_folder_var,
                                             command=self.push_checkbox,
@@ -96,6 +99,9 @@ class App(ctk.CTk):
         # Create Full tree button
         self.create_full_tree_button = ctk.CTkButton(self.tree_frame, text="Full", width=90, command=self.create_tree)
         self.create_full_tree_button.grid(row=2, column=1, pady=5, padx=5, sticky="nwse")
+
+        self.create_clear_logbox_button = ctk.CTkButton(self.root_frame, text="Clear Log Box", width=180, command=self.clear_logbox)
+        self.create_clear_logbox_button.grid(row=2, column=1, pady=5, padx=5, sticky="we")
 
         # Log area
         self.log_frame = ctk.CTkFrame(self)
@@ -132,6 +138,9 @@ class App(ctk.CTk):
             self.log_operation('►►► Program will delete allready existed folders checkbox', foreground='SteelBlue1')
         else:
             self.log_operation('►►► Program will skip allready existed folders checkbox', foreground='SteelBlue1')
+
+    def clear_logbox(self):
+        self.log_box.delete('1.0', END)
 
     def update_label_info(self, entry, label):
         """Updates the label with folder and file counts."""
