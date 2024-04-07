@@ -28,7 +28,7 @@ Tired of manually managing symlinks for your media server? This handy utility au
 
 >GUI:
 <p align="center">
-<img src="https://telegra.ph/file/954dbde7051f3ae86672e.png">
+<img src="https://telegra.ph/file/a820dcd5551593f220247.png">
 </p>
 
 ---
@@ -62,7 +62,6 @@ Or you can just download already built executable [here](https://github.com/smyh
 * shutil (for folder removal)
 
 ## TODO:
-* Add clear log windows function
 * Get media single file info button
 
 ## Telegram Support:
