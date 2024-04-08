@@ -1,12 +1,65 @@
 import customtkinter as ctk
-from tkinter import filedialog, Label, Text, END, NONE
+from tkinter import filedialog, Label, END
 from CTkMessagebox import CTkMessagebox
 import os
 import sys
 import ctypes
 import shutil
-
+from io import StringIO
+from pymediainfo import MediaInfo
+from rich.tree import Tree
+from rich.console import Console
 ctk.set_appearance_mode("System")
+
+
+class FileInfo:
+    def __init__(self, file_path):
+        self.file_path = file_path
+        self.media_info = MediaInfo.parse(file_path)
+        self.file_stats = os.stat(file_path)
+
+    def get_media_info(self):
+        tree = Tree(f"[bold blue]File Info: {self.file_path}[/]")
+        for track in self.media_info.tracks:
+            if track.track_type == "General":
+                general_tree = tree.add("[bold magenta]General[/]")
+                for key, value in track.to_data().items():
+                    if isinstance(value, list):
+                        value = ", ".join(value)
+                    general_tree.add(f"[bold white]{key}:[/] {value}")
+            elif track.track_type in ["Video", "Audio", "Text", "Image", "Menu"]:
+                track_tree = tree.add(f"[bold magenta]{track.track_type}[/]")
+                for key, value in track.to_data().items():
+                    if isinstance(value, list):
+                        value = ", ".join(value)
+                    track_tree.add(f"[bold white]{key}:[/] {value}")
+        return tree
+
+    def get_system_info(self):
+        tree = Tree(f"[bold blue]System Info: {self.file_path}[/]")
+        file_stats_tree = tree.add("[bold magenta]File Stats[/]")
+        for key in dir(self.file_stats):
+            if not key.startswith('_'):
+                value = getattr(self.file_stats, key)
+                file_stats_tree.add(f"[bold white]{key}:[/] {value}")
+        return tree
+
+    def print_info_to_text_widget(self, log_box):
+        # console = Console()
+        output_stream = StringIO()
+        console = Console(file=output_stream, width=180)
+
+        try:
+            media_tree = self.get_media_info()
+            console.print(media_tree)
+        except Exception as e:
+            console.print(f"[bold red]Error parsing media info: {e}[/]")
+        system_tree = self.get_system_info()
+        console.print('\n\n\n')
+        console.print(system_tree)
+
+        log_box.insert(END, output_stream.getvalue())
+        log_box.see(END)
 
 
 class App(ctk.CTk):
@@ -100,8 +153,13 @@ class App(ctk.CTk):
         self.create_full_tree_button = ctk.CTkButton(self.tree_frame, text="Full", width=90, command=self.create_tree)
         self.create_full_tree_button.grid(row=2, column=1, pady=5, padx=5, sticky="nwse")
 
+        # Clear log box function
         self.create_clear_logbox_button = ctk.CTkButton(self.root_frame, text="Clear Log Box", width=180, command=self.clear_logbox)
         self.create_clear_logbox_button.grid(row=2, column=1, pady=5, padx=5, sticky="we")
+
+        # Gem media info log box function
+        self.create_get_media_info_button = ctk.CTkButton(self.root_frame, text="Get media info", width=180, command=self.get_media_info)
+        self.create_get_media_info_button.grid(row=3, column=1, pady=5, padx=5, sticky="we")
 
         # Log area
         self.log_frame = ctk.CTkFrame(self)
@@ -141,6 +199,12 @@ class App(ctk.CTk):
 
     def clear_logbox(self):
         self.log_box.delete('1.0', END)
+
+    def get_media_info(self):
+        file_path = filedialog.askopenfilename()
+        file_info = FileInfo(file_path)
+        # self.log_operation(file_info.print_info())
+        file_info.print_info_to_text_widget(self.log_box)
 
     def update_label_info(self, entry, label):
         """Updates the label with folder and file counts."""
