@@ -1,2 +1,4 @@
 customtkinter
 CTkMessagebox
+pymediainfo
+rich
