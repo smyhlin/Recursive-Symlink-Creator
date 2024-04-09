@@ -62,7 +62,7 @@ Or you can just download already built executable [here](https://github.com/smyh
 * shutil (for folder removal)
 
 ## TODO:
-* Try to make media info colorable
+* Implement 2 types of media info output: compact & datailed
 
 ## Telegram Support:
 
