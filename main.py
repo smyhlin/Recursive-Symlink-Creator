@@ -1,3 +1,4 @@
+from http.client import LineTooLong
 import customtkinter as ctk
 from tkinter import filedialog, Label, END
 from CTkMessagebox import CTkMessagebox
@@ -58,9 +59,17 @@ class FileInfo:
         console.print('\n\n\n')
         console.print(system_tree)
 
-        log_box.insert(END, output_stream.getvalue())
         log_box.see(END)
-
+        for line in output_stream.getvalue().splitlines():
+            for tag in ["── General", "── Video", "── Audio", "── Text", "── Image", "── Menu"]:
+                if tag in line:
+                    log_box.tag_config("tag", foreground='SteelBlue1')
+                    log_box.insert(END, line, "tag")
+                    log_box.insert(END, '\n')
+                    break
+            else:
+                log_box.insert(END, line)
+                log_box.insert(END, '\n')
 
 class App(ctk.CTk):
     WIDTH = 960
