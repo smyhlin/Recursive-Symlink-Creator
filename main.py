@@ -16,12 +16,63 @@ ctk.set_appearance_mode("System")
 class FileInfo:
     def __init__(self, file_path):
         self.file_path = file_path
-        self.media_info = MediaInfo.parse(file_path)
+        self.mediainfo = MediaInfo.parse(file_path)
         self.file_stats = os.stat(file_path)
+        self.key_mappings = {
+        "other_unique_id": "Unique ID",
+        "file_name": "Complete name",
+        "other_format": "Format",
+        "format_version": "Format version",
+        "other_file_size": "File size",
+        "other_overall_bit_rate": "Overall bit rate",
+        "movie_name": "Movie name",
+        "encoded_date": "Encoded date",
+        "other_writing_application": "Writing application",
+        "format_profile": "Format profile",
+        "format_settings": "Format settings",
+        "other_format_settings__cabac": "Format settings, CABAC",
+        "other_format_settings__reframes": "Format settings, RefFrames",
+        "other_width": "Width",
+        "other_height": "Height",
+        "other_display_aspect_ratio": "Display aspect ratio",
+        "other_frame_rate_mode": "Frame rate mode",
+        "color_space": "Color space",
+        "other_chroma_subsampling": "Chroma subsampling",
+        "other_scan_type": "Scan type",
+        "bits__pixel_frame": "Bits/(Pixel*Frame)",
+        "other_writing_library": "Writing library",
+        "encoding_settings": "Encoding settings",
+        "color_range": "Color range",
+        "color_primaries": "Color primaries",
+        "matrix_coefficients": "Matrix coefficients",
+        "format_info": "Format/Info",
+        'other_overall_bit_rate_mode': "Overall bit rate mode",
+        "other_bit_rate_mode": "Bit rate mode",
+        "other_channel_s": "Channel(s)",
+        "channel_positions": "Channel positions",
+        "channel_layout": "Channel layout",
+        "other_sampling_rate": "Sampling rate",
+        "other_commercial_name": "Commercial name",
+        "other_frame_rate": "Frame rate",
+        "other_bit_depth": "Bit depth",
+        "other_compression_mode": "Compression mode",
+        "other_service_kind": "Service kind",
+        "track_id": "ID",
+        "codec_id": "Codec ID",
+        "codec_id_info": "Codec ID/Info",
+        "other_duration": "Duration",
+        "other_bit_rate": "Bit rate",
+        "count_of_elements": "Count of elements",
+        "other_stream_size": "Stream size",
+        "other_language": "Language",
+        "other_default": "Default",
+        "other_forced": "Forced",
+        "muxing_mode": "Muxing mode"
+    }
 
-    def get_media_info(self):
+    def get_media_info_detailed(self):
         tree = Tree(f"[bold blue]File Info: {self.file_path}[/]")
-        for track in self.media_info.tracks:
+        for track in self.mediainfo.tracks:
             if track.track_type == "General":
                 general_tree = tree.add("[bold magenta]General[/]")
                 for key, value in track.to_data().items():
@@ -35,6 +86,34 @@ class FileInfo:
                         value = ", ".join(value)
                     track_tree.add(f"[bold white]{key}:[/] {value}")
         return tree
+
+    def get_media_info_compact(self):
+        media_info = []
+        tracks = self.mediainfo.to_data()['tracks']
+        for track in tracks:
+            track_type = track['track_type']
+            if int(track['count_of_stream_of_this_kind']) > 1:
+                media_info.append(f'{track_type} #{int(track["stream_identifier"]) + 1}')
+            else:
+                media_info.append(track_type)
+            for k, v in track.items():
+                if k in self.key_mappings:
+                    if 'other' in k:
+                        media_info.append(self.formatted(self.key_mappings[k], track[k][0]))
+                    else:
+                        media_info.append(self.formatted(self.key_mappings[k], track[k]))
+                elif k.strip('other_') in self.key_mappings:
+                    media_info.append(self.formatted(self.key_mappings[k.strip('other_')], track[k]))
+                elif k[:1].isdigit():
+                    media_info.append(self.formatted((k[:8] + '.' + k[8:]).replace('_', ':'), v))
+            media_info.append('')
+
+        return '\n'.join(media_info)
+
+
+    def formatted(self, left, right):
+        fixed = f"{left:<41}: {right}"
+        return fixed
 
     def get_system_info(self):
         tree = Tree(f"[bold blue]System Info: {self.file_path}[/]")
@@ -51,7 +130,8 @@ class FileInfo:
         console = Console(file=output_stream, width=180)
 
         try:
-            media_tree = self.get_media_info()
+            media_tree = self.get_media_info_detailed()
+
             console.print(media_tree)
         except Exception as e:
             console.print(f"[bold red]Error parsing media info: {e}[/]")
