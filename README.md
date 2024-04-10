@@ -62,7 +62,7 @@ Or you can just download already built executable [here](https://github.com/smyh
 * shutil (for folder removal)
 
 ## TODO:
-* Implement 2 types of media info output: compact & datailed
+* Add buttons to GUI into media frame
 
 ## Telegram Support:
 
