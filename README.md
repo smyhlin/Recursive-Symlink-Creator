@@ -62,7 +62,7 @@ Or you can just download already built executable [here](https://github.com/smyh
 * shutil (for folder removal)
 
 ## TODO:
-* Add buttons to GUI into media frame
+* Fix compact log view tabs
 
 ## Telegram Support:
 
