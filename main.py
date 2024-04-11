@@ -124,15 +124,18 @@ class FileInfo:
                 file_stats_tree.add(f"[bold white]{key}:[/] {value}")
         return tree
 
-    def print_info_to_text_widget(self, log_box):
+    def print_info_to_text_widget(self, log_box, info_type=''):
         # console = Console()
         output_stream = StringIO()
-        console = Console(file=output_stream, width=180)
+        console = Console(file=output_stream, width=180) # Able to out into console
 
         try:
-            media_tree = self.get_media_info_detailed()
-
-            console.print(media_tree)
+            if info_type == 'compact':
+                media_tree = self.get_media_info_compact()
+                console.print(media_tree)
+            elif info_type == 'detailed':
+                media_tree = self.get_media_info_detailed()
+                console.print(media_tree)
         except Exception as e:
             console.print(f"[bold red]Error parsing media info: {e}[/]")
         system_tree = self.get_system_info()
@@ -235,20 +238,26 @@ class App(ctk.CTk):
         self.source_label.grid(row=1, column=0, columnspan=2, padx=5,sticky="we")
 
         # Create Mini tree button
-        self.create_mini_tree_button = ctk.CTkButton(self.tree_frame, text="Mini", width=90, command=self.create_minitree)
+        self.create_mini_tree_button = ctk.CTkButton(self.tree_frame, text="Compact", width=90, command=self.create_minitree)
         self.create_mini_tree_button.grid(row=2, column=0, pady=5, padx=5, sticky="nwse")
 
         # Create Full tree button
         self.create_full_tree_button = ctk.CTkButton(self.tree_frame, text="Full", width=90, command=self.create_tree)
         self.create_full_tree_button.grid(row=2, column=1, pady=5, padx=5, sticky="nwse")
 
-        # Clear log box function
-        self.create_clear_logbox_button = ctk.CTkButton(self.root_frame, text="Clear Log Box", width=180, command=self.clear_logbox)
-        self.create_clear_logbox_button.grid(row=2, column=1, pady=5, padx=5, sticky="we")
+        # Media Info frame area
+        self.media_info_frame = ctk.CTkFrame(self.root_frame)
+        self.media_info_frame.grid(row=3, column=1, pady=5, padx=5,sticky="nswe")
 
-        # Gem media info log box function
-        self.create_get_media_info_button = ctk.CTkButton(self.root_frame, text="Get media info", width=180, command=self.get_media_info)
-        self.create_get_media_info_button.grid(row=3, column=1, pady=5, padx=5, sticky="we")
+        self.source_label = ctk.CTkLabel(self.media_info_frame, text="Get media info:")
+        self.source_label.grid(row=0, column=1, columnspan=2, padx=5,sticky="we")
+
+        # Get compact media info log box function
+        self.create_get_compact_media_info_button = ctk.CTkButton(self.media_info_frame, text="Compact", width=90, command=self.get_compact_media_info)
+        self.create_get_compact_media_info_button.grid(row=1, column=1, pady=5, padx=5, sticky="we")
+        # Get full media info log box function
+        self.create_get_full_media_info_button = ctk.CTkButton(self.media_info_frame, text="Full", width=90, command=self.get_full_media_info)
+        self.create_get_full_media_info_button.grid(row=1, column=2, pady=5, padx=5, sticky="we")
 
         # Log area
         self.log_frame = ctk.CTkFrame(self)
@@ -257,6 +266,10 @@ class App(ctk.CTk):
         self.log_box = ctk.CTkTextbox(self.log_frame, font=("Helvetica", 12), wrap="none")
         self.log_box.grid(row=0, column=0, rowspan=2, sticky="nswe")
         # self.log_box.configure(state="disabled")
+
+        # Clear log box function
+        self.create_clear_logbox_button = ctk.CTkButton(self.root_frame, text="Clear Log Box", width=180, command=self.clear_logbox)
+        self.create_clear_logbox_button.grid(row=4, column=1, pady=5, padx=5, sticky="we")
 
         # Configure root_frame grid layout (2x2)
         self.root_frame.grid_columnconfigure(2, weight=1)
@@ -289,11 +302,17 @@ class App(ctk.CTk):
     def clear_logbox(self):
         self.log_box.delete('1.0', END)
 
-    def get_media_info(self):
+    def get_full_media_info(self):
         file_path = filedialog.askopenfilename()
         file_info = FileInfo(file_path)
         # self.log_operation(file_info.print_info())
-        file_info.print_info_to_text_widget(self.log_box)
+        file_info.print_info_to_text_widget(self.log_box, 'detailed')
+
+    def get_compact_media_info(self):
+        file_path = filedialog.askopenfilename()
+        file_info = FileInfo(file_path)
+        # self.log_operation(file_info.print_info())
+        file_info.print_info_to_text_widget(self.log_box, 'compact')
 
     def update_label_info(self, entry, label):
         """Updates the label with folder and file counts."""
