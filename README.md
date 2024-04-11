@@ -28,7 +28,7 @@ Tired of manually managing symlinks for your media server? This handy utility au
 
 >GUI:
 <p align="center">
-<img src="https://telegra.ph/file/b964e7fc38825ca9ca41d.jpg">
+<img src="https://telegra.ph/file/e577295b7667162bfcc1d.png">
 </p>
 
 ---
