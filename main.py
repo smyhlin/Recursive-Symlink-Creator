@@ -1,4 +1,4 @@
-from http.client import LineTooLong
+import tkinter
 import customtkinter as ctk
 from tkinter import filedialog, Label, END
 from CTkMessagebox import CTkMessagebox
@@ -154,12 +154,33 @@ class FileInfo:
                 log_box.insert(END, line)
                 log_box.insert(END, '\n')
 
+class ToplevelWindow(ctk.CTkToplevel):
+    WIDTH= 480
+    HEIGHT= 580
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.geometry(f"{ToplevelWindow.WIDTH}x{ToplevelWindow.HEIGHT}")
+        self.text = tkinter.Text(self)
+        self.text.grid(padx=5, pady=5, sticky="nswe")
+        self.center_window(self)
+
+    def center_window(self, window):
+        """Centers the window on the screen."""
+        sw = self.winfo_screenwidth()
+        sh = self.winfo_screenheight()
+
+        x = (sw - ToplevelWindow.WIDTH) / 2
+        y = (sh - ToplevelWindow.HEIGHT) / 2
+        self.geometry("%dx%d+%d+%d" % (ToplevelWindow.WIDTH, ToplevelWindow.HEIGHT, x, y))
+        window.focus_force()
+        window.wm_attributes("-topmost", True)
+
 class App(ctk.CTk):
     WIDTH = 960
     HEIGHT = 590
     DEBUG_ME=False
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.folder_count = 0
         self.file_count = 0
         self.recursive_count = 1
@@ -168,6 +189,7 @@ class App(ctk.CTk):
         self.title("Recursive Symlink Creator")
         self.geometry(f"{App.WIDTH}x{App.HEIGHT}")  # Increased height for log area
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.toplevel_window = None
 
         # Configure root grid layout (3x1)
         self.grid_columnconfigure(0, weight=1)
@@ -271,6 +293,10 @@ class App(ctk.CTk):
         self.create_clear_logbox_button = ctk.CTkButton(self.root_frame, text="Clear Log Box", width=180, command=self.clear_logbox)
         self.create_clear_logbox_button.grid(row=4, column=1, pady=5, padx=5, sticky="we")
 
+        # Clear log box function
+        self.create_clear_logbox_button = ctk.CTkButton(self.root_frame, text="New window", width=180, command=self.open_toplevel)
+        self.create_clear_logbox_button.grid(row=5, column=1, pady=5, padx=5, sticky="we")
+
         # Configure root_frame grid layout (2x2)
         self.root_frame.grid_columnconfigure(2, weight=1)
         self.root_frame.grid_rowconfigure(1, weight=1)
@@ -291,7 +317,13 @@ class App(ctk.CTk):
         y = (sh - App.HEIGHT) / 2
         self.geometry("%dx%d+%d+%d" % (App.WIDTH, App.HEIGHT, x, y))
         window.focus_force()
-        window.wm_attributes("-topmost", True)
+        # window.wm_attributes("-topmost", True)
+
+    def open_toplevel(self):
+        if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
+            self.toplevel_window = ToplevelWindow(self)  # create window if its None or destroyed
+        else:
+            self.toplevel_window.focus()  # if window exists focus it
 
     def push_checkbox(self):
         if self.operate_folder_var.get():

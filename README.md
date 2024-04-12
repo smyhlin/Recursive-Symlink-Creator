@@ -62,7 +62,7 @@ Or you can just download already built executable [here](https://github.com/smyh
 * shutil (for folder removal)
 
 ## TODO:
-* Fix compact log view tabs
+* Refactor media info \ folder tree to be able to open in new windwos 
 
 ## Telegram Support:
 
