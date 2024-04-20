@@ -266,6 +266,13 @@ class App(ctk.CTk):
         # Create Full tree button
         self.create_full_tree_button = ctk.CTkButton(self.tree_frame, text="Full", width=90, command=self.create_tree)
         self.create_full_tree_button.grid(row=2, column=1, pady=5, padx=5, sticky="nwse")
+        self.open_in_new_window_checkbox = ctk.CTkCheckBox(self.tree_frame, 
+                                            text="Open in new window", 
+                                            variable=self.operate_folder_var,
+                                            command=self.push_checkbox,
+                                            onvalue=True, 
+                                            offvalue=False)
+        self.open_in_new_window_checkbox.grid(row=3, column=1, columnspan=2, padx=5, sticky="we")
 
         # Media Info frame area
         self.media_info_frame = ctk.CTkFrame(self.root_frame)
@@ -280,6 +287,14 @@ class App(ctk.CTk):
         # Get full media info log box function
         self.create_get_full_media_info_button = ctk.CTkButton(self.media_info_frame, text="Full", width=90, command=self.get_full_media_info)
         self.create_get_full_media_info_button.grid(row=1, column=2, pady=5, padx=5, sticky="we")
+        self.open_in_new_window_checkbox = ctk.CTkCheckBox(self.media_info_frame, 
+                                            text="Open in new window", 
+                                            variable=self.operate_folder_var,
+                                            command=self.push_checkbox,
+                                            onvalue=True, 
+                                            offvalue=False)
+        self.open_in_new_window_checkbox.grid(row=3, column=1,columnspan=2, padx=5, sticky="we")
+
 
         # Log area
         self.log_frame = ctk.CTkFrame(self)
@@ -337,13 +352,11 @@ class App(ctk.CTk):
     def get_full_media_info(self):
         file_path = filedialog.askopenfilename()
         file_info = FileInfo(file_path)
-        # self.log_operation(file_info.print_info())
         file_info.print_info_to_text_widget(self.log_box, 'detailed')
 
     def get_compact_media_info(self):
         file_path = filedialog.askopenfilename()
         file_info = FileInfo(file_path)
-        # self.log_operation(file_info.print_info())
         file_info.print_info_to_text_widget(self.log_box, 'compact')
 
     def update_label_info(self, entry, label):
